@@ -7,7 +7,7 @@ const APP_URL = process.env.THERMAGUARD_DEMO_URL || 'https://thermaguard-1060372
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
 const outputDirectory = path.resolve(scriptDirectory, '../../demo-assets')
 const rawDirectory = path.join(outputDirectory, 'raw')
-const finalVideo = path.join(outputDirectory, 'thermaguard-continuous-demo.webm')
+const finalVideo = path.join(outputDirectory, 'thermasite-continuous-demo.webm')
 
 const pause = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
@@ -117,16 +117,22 @@ try {
   await show(page.locator('#impact'), 8500)
   await page.locator('.impact-metrics').waitFor({ timeout: 20_000 })
 
+  await show(page.locator('.decision-case'), 10000)
+  await page.locator('.business-metrics').waitFor({ timeout: 20_000 })
+  await show(page.locator('.strategy-table'), 8000)
+
   await show(page.locator('.decision-section'), 8000)
 
   await show(page.locator('.tuning-section'), 6000)
-  const powerWeight = page.locator('.weight-editor input[type="range"]').nth(1)
-  await focus(powerWeight)
-  await powerWeight.fill('40')
+  const thermalWeight = page.locator('.weight-editor input[type="range"]').first()
+  await focus(thermalWeight)
+  await thermalWeight.fill('65')
   await pause(2000)
   await polishedClick(page.getByRole('button', { name: /Apply weights/ }))
-  await page.getByRole('button', { name: /Apply weights/ }).waitFor({ state: 'visible', timeout: 30_000 })
+  await page.getByRole('heading', { name: 'Hillsboro fits best.' }).waitFor({ timeout: 30_000 })
   await pause(5500)
+
+  await show(page.locator('.decision-case'), 8000)
 
   await polishedClick(page.getByRole('button', { name: /Evidence & memo/ }))
   const drawer = page.getByRole('dialog', { name: 'Evidence & exports' })

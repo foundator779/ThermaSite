@@ -20,8 +20,9 @@ Early data-center site selection is fragmented across temperature data, utility 
 4. The **Site Intelligence Agent** assembles sourced permitting, power, water, and infrastructure evidence.
 5. The deterministic **Scoring Engine** ranks the five markets. Models cannot alter numerical scores.
 6. The **Resource Estimator** combines FortyGuard heat metrics with explicit PUE and WUE assumptions to project facility power and selected-window water ranges.
-7. The **Evidence Audit Gate** checks source coverage, thermal data, calculations, and uncertain claims.
-8. The **Recommendation Agent** produces a decision summary, diligence queue, investment memo, and evidence bundle.
+7. The deterministic **Decision Stress Test** replays stored facts through five buyer strategies and quantifies selected-window energy, water, and electricity-spend advantages.
+8. The **Evidence Audit Gate** reproduces source coverage, rankings, resource calculations, investment-impact claims, and uncertain statements.
+9. The **Recommendation Agent** produces a decision summary, diligence queue, investment memo, and evidence bundle.
 
 The UI exposes plans, tool calls, provider statuses, citations, and validation outcomes—not private model reasoning.
 
@@ -59,6 +60,8 @@ Default ranking weights are thermal/cooling 40%, power 25%, water 15%, permittin
 - Hard-constraint failures stay visible but cannot become the recommended site.
 
 Facility power uses a heat-adjusted PUE scenario. Direct water is shown as a cooling-system WUE range, never a single guaranteed value. Estimates cover the selected July window; annual extrapolation is disabled by default and does not affect ranking. FortyGuard supplies the ambient-heat evidence—the deterministic estimator translates that evidence into planning scenarios.
+
+The investment case compares the recommended site with the hottest and highest-cost finalists using the same facility profile. It reports selected-window energy and direct-water differences, plus an electricity-spend scenario based on attributed EIA state industrial averages. A five-strategy robustness test—current lens, thermal resilience, power economics, water constraint, and delivery speed—shows whether the recommendation survives a different investment mandate. These calculations use stored evidence only and are independently reproduced by the audit gate.
 
 Each generated footprint is centered on an edge-of-market industrial search zone rather than a municipal centroid and matches the requested acreage. The close view uses satellite context so reviewers can see the surrounding land pattern. Aerial appearance does not establish vacancy or availability: the AOI is still an illustrative comparison, not a selected parcel, entitlement finding, utility-service boundary, or engineering layout.
 
@@ -114,9 +117,10 @@ Open `http://localhost:5173`. API documentation is at `http://localhost:8000/doc
 3. Watch the trace show catalog pre-screening, five matched FortyGuard AOIs, cited research, scoring, resource estimation, and audit.
 4. Select rank cards to move the map between five generated facility footprints and compare heat-adjusted power and water projections.
 5. Review the leading candidate, factor scores, confidence, hard constraints, and next diligence actions.
-6. Change power or water weight and apply an immediate persisted rescore without repeating provider calls.
-7. Refresh to confirm the decision and facility estimates remain saved.
-8. Open **Evidence & memo** to inspect citations and download the investment memo/evidence bundle.
+6. Inspect the selected-window operating advantage and five-strategy recommendation stress test.
+7. Change power or water weight and apply an immediate persisted rescore without repeating provider calls.
+8. Refresh to confirm the decision, impact case, and facility estimates remain saved.
+9. Open **Evidence & memo** to inspect citations and download the investment memo/evidence bundle.
 
 ## API
 

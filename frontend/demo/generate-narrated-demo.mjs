@@ -9,12 +9,12 @@ const ffmpegPath = require('ffmpeg-static')
 const ffprobePath = require('ffprobe-static').path
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
 const workspace = path.resolve(scriptDirectory, '../..')
-const inputVideo = path.join(workspace, 'demo-assets/thermaguard-continuous-demo.webm')
+const inputVideo = path.join(workspace, 'demo-assets/thermasite-continuous-demo.webm')
 const outputDirectory = path.join(workspace, 'demo-assets/narration')
 const narrationTrack = path.join(outputDirectory, 'thermasite-narration.wav')
 const finalVideo = path.join(workspace, 'demo-assets/thermasite-final-demo-narrated.mp4')
 const timingFile = path.join(outputDirectory, 'timing-report.json')
-const videoDuration = 115.36
+let videoDuration = 132
 
 const voice = {
   id: 'hpp4J3VqNfWAUOO0d1Us',
@@ -23,16 +23,17 @@ const voice = {
 }
 
 const segments = [
-  { start: 0.5, end: 4.9, text: 'Where should your next AI data center actually go?' },
-  { start: 5.5, end: 22.7, text: 'ThermaSite starts with the facility itself. Set the campus acreage, design density, cooling architecture, and utilization. Forty acres at one point two five megawatts per acre becomes a fifty-megawatt planning profile.' },
-  { start: 23.5, end: 31.5, text: 'Every screening, source, estimate, and rescore is saved in the judge workspace.' },
-  { start: 32.0, end: 55.0, text: 'The agent pre-screens eight sourced U.S. industrial markets, then sends equal forty-acre footprints to FortyGuard. If one area fails thermal validation, it automatically promotes the next candidate. Here are five complete, rankable finalists.' },
-  { start: 55.5, end: 64.5, text: "On satellite imagery, the concept now sits on open land beside New Albany's business park, not in the city center." },
-  { start: 65.0, end: 73.5, text: 'This is a search zone, not a claim that a parcel is available, zoned, or buildable.' },
-  { start: 74.0, end: 82.5, text: 'FortyGuard measures ambient heat. ThermaSite applies transparent PUE and WUE assumptions to estimate power and water.' },
-  { start: 83.0, end: 96.0, text: 'The ranking is deterministic. Heat, power, water, permitting, and infrastructure stay visible. Change the investment weights, and ThermaSite rescores stored evidence without another paid provider call.' },
-  { start: 96.5, end: 110.5, text: 'The audit recalculates every projection and checks provenance. Reviewers can inspect official sources, FortyGuard activity IDs, uncertainty labels, and download the investment memo and evidence bundle.' },
-  { start: 111.0, end: 115.1, text: 'ThermaSite turns requirements into a shortlist worth investigating.' },
+  { start: 0.5, end: 4.5, text: 'Where should your next AI data center actually go?' },
+  { start: 5.0, end: 21.0, text: 'Set acreage, density, cooling, and utilization. A sixty-acre dense concept reaches one hundred twenty megawatts. Reset to forty acres at one point two five megawatts per acre for the saved fifty-megawatt profile.' },
+  { start: 22.0, end: 31.0, text: 'Every screening, source, estimate, and rescore is saved in the judge workspace.' },
+  { start: 32.0, end: 47.0, text: 'The agent pre-screens eight sourced industrial markets, submits equal forty-acre footprints to FortyGuard, and keeps five complete finalists.' },
+  { start: 47.5, end: 64.0, text: "Each overlay shows the same facility on an industrial-edge search zone. The concepts sit on open land, not city centers, and never claim that a parcel is available or buildable." },
+  { start: 65.0, end: 82.0, text: 'FortyGuard measures ambient heat. Transparent PUE and WUE assumptions turn that evidence into comparable power, water, and July operating-cost scenarios for the exact same facility.' },
+  { start: 83.0, end: 95.0, text: 'The investment case is measurable: cost advantage, energy avoided, direct water avoided, and recommendation durability across five buyer strategies.' },
+  { start: 96.0, end: 107.0, text: 'Every factor stays visible. Change the investment weights, and ThermaSite rescores stored evidence without another paid provider call.' },
+  { start: 108.0, end: 121.0, text: 'The recommendation and operating advantage update together. Here, emphasizing thermal resilience moves Hillsboro to first and exposes a more sensitive decision.' },
+  { start: 122.0, end: 137.0, text: 'An independent audit reproduces the ranking, projections, and impact claims. Judges can inspect official sources, FortyGuard activity IDs, and download the memo and evidence bundle.' },
+  { start: 137.5, end: 142.3, text: 'ThermaSite finds the five places worth investigating next.' },
 ]
 
 const regenerateSegments = new Set(
@@ -70,6 +71,8 @@ function duration(file) {
     '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file,
   ]).trim())
 }
+
+videoDuration = duration(inputVideo)
 
 await mkdir(outputDirectory, { recursive: true })
 const env = loadEnv(await readFile(path.join(workspace, '.env'), 'utf8'))

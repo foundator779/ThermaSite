@@ -156,6 +156,33 @@ export interface SiteRecommendation {
   illustrative_annual_cooling_cost_usd?: number
 }
 
+export interface StrategyResult {
+  name: string
+  emphasis: string
+  weights: FactorWeights
+  winner_site_id?: string
+  winner_score?: number
+  margin_to_second?: number
+}
+
+export interface DecisionAnalysis {
+  leader_site_id: string
+  hottest_site_id: string
+  costliest_site_id?: string
+  window_days: number
+  leader_window_energy_cost_usd?: number
+  costliest_window_energy_cost_usd?: number
+  window_cost_advantage_usd?: number
+  window_energy_avoided_mwh: number
+  window_water_avoided_gallons_low: number
+  window_water_avoided_gallons_high: number
+  robustness_wins: number
+  robustness_total: number
+  robustness_label: 'resilient' | 'competitive' | 'sensitive'
+  strategies: StrategyResult[]
+  assumptions: string[]
+}
+
 export interface ScreeningEvent {
   id: string
   timestamp: string
@@ -194,6 +221,7 @@ export interface ScreeningRecord {
   candidates: CandidateSite[]
   recommendations: SiteRecommendation[]
   resource_estimates: ResourceEstimate[]
+  decision_analysis?: DecisionAnalysis
   events: ScreeningEvent[]
   progress: number
   current_step: string

@@ -13,6 +13,7 @@ import {
 } from './api/screenings'
 import { getReadiness } from './api/system'
 import { AgentTrace } from './components/screening/AgentTrace'
+import { DecisionCase } from './components/screening/DecisionCase'
 import { EvidenceDrawer } from './components/screening/EvidenceDrawer'
 import { FacilityImpact } from './components/screening/FacilityImpact'
 import { ScreeningMap } from './components/screening/ScreeningMap'
@@ -205,6 +206,8 @@ export default function App() {
 
         <FacilityImpact site={selected} estimate={latestEstimate} recommendation={selectedRecommendation} />
 
+        <DecisionCase record={record} />
+
         <section className="decision-section">
           <header><div><span className="eyebrow">Deterministic decision model</span><h2>One score. Every tradeoff visible.</h2></div>{record.status === 'COMPLETED' && <span className="audit-badge"><Check size={14} /> {record.audit?.passed ? 'Evidence audited' : 'Review required'}</span>}</header>
           <div className="factor-grid">
@@ -234,7 +237,7 @@ export default function App() {
         <section className="verify-section"><div><span className="eyebrow">What to verify next</span><h2>Diligence queue</h2></div><ol>{record.due_diligence.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, '0')}</span>{item}</li>)}</ol></section>
       </>}
 
-      <section className="method-strip" id="method-overview"><span>01 · FortyGuard heat</span><ChevronRight /><span>02 · Grounded site facts</span><ChevronRight /><span>03 · Deterministic scoring</span><ChevronRight /><span>04 · Independent audit</span></section>
+      <section className="method-strip" id="method-overview"><span>01 · FortyGuard heat</span><ChevronRight /><span>02 · Grounded site facts</span><ChevronRight /><span>03 · Deterministic scoring</span><ChevronRight /><span>04 · Strategy stress test</span><ChevronRight /><span>05 · Independent audit</span></section>
     </main>}
     <EvidenceDrawer record={record} open={evidenceOpen} onClose={() => setEvidenceOpen(false)} />
     <footer className="site-footer"><span>ThermaSite</span><p>Screening intelligence for data-center decisions. Not engineering, legal, water-rights, or utility-capacity advice.</p><small>FortyGuard Hackathon ’26 · Track 3</small></footer>

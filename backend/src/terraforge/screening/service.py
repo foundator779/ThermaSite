@@ -11,6 +11,7 @@ from terraforge.persistence import ArtifactStore
 from terraforge.settings import Settings
 
 from .catalog import get_catalog_site, select_catalog_shortlist
+from .decision import build_decision_analysis
 from .estimator import calculate_resource_estimate, normalize_polygon
 from .fortyguard import FortyGuardClient, candidate_polygon
 from .models import (
@@ -202,6 +203,20 @@ class ScreeningService:
                 "Applied normalized factor weights, confidence regression, and hard constraints without model-authored scores.",
                 scores=[item.model_dump(mode="json") for item in record.recommendations],
             )
+
+            record.decision_analysis = build_decision_analysis(record)
+            await self.store.save(record)
+            if record.decision_analysis is not None:
+                await self.emit(
+                    screening_id,
+                    "Decision Stress-Test Agent",
+                    "decision.stress_test.completed",
+                    (
+                        f"Replayed stored evidence across {record.decision_analysis.robustness_total} "
+                        "investment strategies and quantified the selected-window operating advantage."
+                    ),
+                    analysis=record.decision_analysis.model_dump(mode="json"),
+                )
 
             await self._stage(record, ScreeningStatus.AUDITING, "evidence_audit", 84)
             record.audit = self._audit(record)
@@ -425,6 +440,11 @@ class ScreeningService:
                 numerical_mismatches.append(
                     f"{result.site_id} stored rank/score did not match deterministic recalculation."
                 )
+        reproduced_decision = build_decision_analysis(record)
+        if record.decision_analysis != reproduced_decision:
+            numerical_mismatches.append(
+                "Stored decision-impact or rank-robustness claims did not match deterministic recalculation."
+            )
         sites_by_id = {site.id: site for site in record.candidates}
         for estimate in record.resource_estimates:
             estimate_site = sites_by_id.get(estimate.site_id)
@@ -578,6 +598,47 @@ class ScreeningService:
                 f"- **{item.rank or '—'}. {site.name}** — {score}/100; "
                 f"readiness {item.decision_readiness * 100:.0f}%; eligible: {item.eligible}."
             )
+        if record.decision_analysis:
+            analysis = record.decision_analysis
+            hottest = sites.get(analysis.hottest_site_id)
+            costliest = sites.get(analysis.costliest_site_id or "")
+            lines += [
+                "",
+                "## Selected-window investment case",
+                "",
+                (
+                    f"- The recommended site wins {analysis.robustness_wins} of "
+                    f"{analysis.robustness_total} deterministic strategy tests "
+                    f"({analysis.robustness_label})."
+                ),
+                (
+                    f"- Versus the hottest finalist ({hottest.name if hottest else analysis.hottest_site_id}), "
+                    f"the same facility scenario avoids {analysis.window_energy_avoided_mwh:,.0f} MWh and "
+                    f"{analysis.window_water_avoided_gallons_low:,.0f}–"
+                    f"{analysis.window_water_avoided_gallons_high:,.0f} gallons of direct water "
+                    f"during the {analysis.window_days}-day window."
+                ),
+            ]
+            if analysis.window_cost_advantage_usd is not None:
+                lines.append(
+                    f"- Versus the highest-cost finalist ({costliest.name if costliest else analysis.costliest_site_id}), "
+                    f"the selected-window electricity-spend advantage is "
+                    f"${analysis.window_cost_advantage_usd:,.0f}."
+                )
+            lines += ["", "### Strategy stress test", ""]
+            for strategy in analysis.strategies:
+                winner = sites.get(strategy.winner_site_id or "")
+                lines.append(
+                    f"- **{strategy.name}:** {winner.name if winner else 'No eligible winner'}"
+                    + (
+                        f" at {strategy.winner_score:.1f}/100; "
+                        f"margin {strategy.margin_to_second:.1f} points."
+                        if strategy.winner_score is not None
+                        and strategy.margin_to_second is not None
+                        else "."
+                    )
+                )
+            lines += ["", *[f"- Assumption: {item}" for item in analysis.assumptions]]
         if record.resource_estimates:
             lines += ["", "## Saved resource-estimator scenarios"]
             for estimate in record.resource_estimates:
@@ -626,7 +687,10 @@ class ScreeningService:
             record.request.cooling,
             record.request.thermal_window,
         )
+        record.decision_analysis = build_decision_analysis(record)
         record.summary, record.due_diligence = self._recommend(record)
+        record.audit = self._audit(record)
+        record.artifacts = self._write_artifacts(record)
         await self.store.save(record)
         await self.emit(
             record.id,
@@ -634,6 +698,11 @@ class ScreeningService:
             "screening.rescored",
             "Recalculated the shortlist from persisted evidence without repeating external calls.",
             weights=record.request.weights.normalized(),
+            decision_analysis=(
+                record.decision_analysis.model_dump(mode="json")
+                if record.decision_analysis
+                else None
+            ),
         )
         return record
 

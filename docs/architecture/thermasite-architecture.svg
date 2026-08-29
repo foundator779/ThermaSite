@@ -107,13 +107,13 @@
 
   <rect x="769" y="452" width="213" height="88" rx="13" class="agent"/>
   <text x="788" y="476" class="number">04</text>
-  <text x="788" y="502" class="boxTitle">Scoring Engine</text>
-  <text x="788" y="523" class="boxText">Deterministic weights</text>
+  <text x="788" y="502" class="boxTitle">Scoring + Stress Test</text>
+  <text x="788" y="523" class="boxText">5 deterministic strategies</text>
 
   <rect x="769" y="570" width="213" height="88" rx="13" class="agent"/>
   <text x="788" y="594" class="number">05</text>
-  <text x="788" y="620" class="boxTitle">Resource Estimator</text>
-  <text x="788" y="641" class="boxText">PUE · WUE scenarios</text>
+  <text x="788" y="620" class="boxTitle">Impact Estimator</text>
+  <text x="788" y="641" class="boxText">PUE · WUE · operating delta</text>
 
   <rect x="1027" y="452" width="235" height="88" rx="13" class="agent"/>
   <text x="1046" y="476" class="number">06</text>

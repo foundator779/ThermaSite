@@ -5,7 +5,7 @@ import path from 'node:path'
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
 const assetDirectory = path.resolve(scriptDirectory, '../../demo-assets')
-const videoPath = path.join(assetDirectory, 'thermaguard-continuous-demo.webm')
+const videoPath = path.join(assetDirectory, 'thermasite-continuous-demo.webm')
 const frameDirectory = path.join(assetDirectory, 'qa-frames')
 await mkdir(frameDirectory, { recursive: true })
 

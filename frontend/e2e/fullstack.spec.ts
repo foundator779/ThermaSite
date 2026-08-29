@@ -58,10 +58,27 @@ function automaticEstimate(siteId: string, index: number) {
 }
 
 function completedRecord() {
+  const strategies = [
+    ['Current investment lens', 'User-selected priorities', 'hillsboro-or', 84.2, 1.8],
+    ['Thermal resilience', 'Heat and cooling continuity', 'hillsboro-or', 88.1, 3.2],
+    ['Power economics', 'Industrial electricity exposure', 'columbus-oh', 83.4, 1.1],
+    ['Water constrained', 'Local water-risk sensitivity', 'hillsboro-or', 86.7, 2.4],
+    ['Delivery speed', 'Permitting and infrastructure readiness', 'hillsboro-or', 85.3, 1.5],
+  ].map(([name, emphasis, winner_site_id, winner_score, margin_to_second]) => ({
+    name, emphasis, winner_site_id, winner_score, margin_to_second,
+    weights: structuredClone(baseRequest.weights),
+  }))
   return {
     id: screeningId, status: 'COMPLETED', created_at: now, updated_at: now,
     request: structuredClone(baseRequest), candidates: structuredClone(sites), resource_estimates: sites.map((site, index) => automaticEstimate(site.id, index)),
     recommendations: [recommendation('hillsboro-or', 1, 84.2), recommendation('council-bluffs-ia', 2, 82.4), recommendation('columbus-oh', 3, 79.8), recommendation('ashburn-va', 4, 74.3), recommendation('phoenix-az', 5, 61.4)],
+    decision_analysis: {
+      leader_site_id: 'hillsboro-or', hottest_site_id: 'phoenix-az', costliest_site_id: 'ashburn-va', window_days: 31,
+      leader_window_energy_cost_usd: 3150000, costliest_window_energy_cost_usd: 3560000, window_cost_advantage_usd: 410000,
+      window_energy_avoided_mwh: 3040, window_water_avoided_gallons_low: 520000, window_water_avoided_gallons_high: 2080000,
+      robustness_wins: 4, robustness_total: 5, robustness_label: 'resilient', strategies,
+      assumptions: ['Selected-window comparisons use the same facility profile.'],
+    },
     events: [
       { id: '00000000-0000-4000-8000-000000000001', timestamp: now, agent: 'Heat Agent', type: 'fortyguard.analysis.completed', message: 'FortyGuard returned matched thermal evidence.', status: 'success', payload: {} },
       { id: '00000000-0000-4000-8000-000000000002', timestamp: now, agent: 'Evidence Audit Gate', type: 'screening.audit.completed', message: 'Every ranked site has thermal and non-thermal provenance.', status: 'success', payload: {} },
@@ -90,6 +107,9 @@ async function mockThermaSite(page: Page) {
       const body = request.postDataJSON()
       record.request.weights = body.weights
       record.recommendations = [recommendation('phoenix-az', 1, 86.1), recommendation('columbus-oh', 2, 78.2), recommendation('hillsboro-or', 3, 73.5), recommendation('council-bluffs-ia', 4, 71.2), recommendation('ashburn-va', 5, 69.8)]
+      record.decision_analysis.leader_site_id = 'phoenix-az'
+      record.decision_analysis.robustness_wins = 3
+      record.decision_analysis.robustness_label = 'competitive'
       record.summary = 'Buckeye West Valley Industrial Edge leads after the updated investment weights.'
       return route.fulfill({ json: record })
     }
@@ -148,6 +168,9 @@ test.describe('ThermaSite mocked acceptance journey', () => {
     await expect(page.locator('.impact-section')).toContainText('Average facility power')
     await expect(page.locator('.impact-section')).toContainText('MW')
     await expect(page.locator('.impact-section')).toContainText('July direct water')
+    await expect(page.locator('.decision-case')).toContainText('4/5')
+    await expect(page.locator('.decision-case')).toContainText('July cost advantage')
+    await expect(page.locator('.strategy-row')).toHaveCount(6)
 
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Hillsboro fits best.' })).toBeVisible()

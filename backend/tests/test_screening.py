@@ -8,6 +8,7 @@ import pytest
 from pydantic import ValidationError
 
 from terraforge.screening.catalog import get_catalog_site, select_catalog_shortlist
+from terraforge.screening.decision import build_decision_analysis
 from terraforge.screening.estimator import calculate_resource_estimate, normalize_polygon
 from terraforge.screening.fortyguard import FortyGuardClient, FortyGuardError, candidate_polygon
 from terraforge.screening.models import (
@@ -28,6 +29,7 @@ from terraforge.screening.models import (
 )
 from terraforge.screening.research import GroundedSiteResearch
 from terraforge.screening.scoring import cooling_cost, score_candidates, score_site
+from terraforge.screening.service import ScreeningService
 from terraforge.settings import Settings
 
 
@@ -203,6 +205,58 @@ def test_resource_estimator_produces_transparent_power_and_water_ranges():
     assert result.peak_facility_power_mw > result.average_facility_power_mw
     assert result.window_water_gallons_high > result.window_water_gallons_low > 0
     assert "extrapolate" in " ".join(result.assumptions).lower()
+
+
+def test_decision_analysis_quantifies_impact_and_stress_tests_the_winner():
+    phoenix = get_catalog_site("phoenix-az")
+    columbus = get_catalog_site("columbus-oh")
+    phoenix.thermal = thermal(mean=37, maximum=48, exceedance=0.72)
+    columbus.thermal = thermal(mean=24, maximum=35, exceedance=0.05)
+    record = ScreeningRecord(request=ScreeningRequest(), candidates=[phoenix, columbus])
+    for site in record.candidates:
+        polygon = candidate_polygon(site)
+        estimate = calculate_resource_estimate(
+            ResourceEstimatorRequest(
+                site_id=site.id,
+                polygon=polygon,
+                it_load_mw=record.request.cooling.it_load_mw,
+                utilization=record.request.cooling.utilization,
+                baseline_pue=record.request.cooling.baseline_pue,
+                reference_temperature_c=record.request.cooling.reference_temperature_c,
+                pue_sensitivity_per_c=record.request.cooling.pue_sensitivity_per_c,
+                cooling_system=record.request.facility.cooling_system,
+                it_density_mw_per_acre=record.request.facility.it_density_mw_per_acre,
+            ),
+            polygon,
+            site.area_sq_mi,
+            site.thermal,
+            record.request.thermal_window,
+        )
+        record.resource_estimates.append(estimate)
+    record.recommendations = score_candidates(
+        record.candidates,
+        record.request.weights,
+        record.request.constraints,
+        record.request.cooling,
+        record.request.thermal_window,
+    )
+    record.decision_analysis = build_decision_analysis(record)
+
+    assert record.decision_analysis is not None
+    assert record.decision_analysis.leader_site_id == "columbus-oh"
+    assert record.decision_analysis.hottest_site_id == "phoenix-az"
+    assert record.decision_analysis.window_energy_avoided_mwh > 0
+    assert record.decision_analysis.window_water_avoided_gallons_high > 0
+    assert record.decision_analysis.window_cost_advantage_usd is not None
+    assert record.decision_analysis.robustness_total == 5
+    assert len(record.decision_analysis.strategies) == 5
+    assert record.decision_analysis.robustness_wins >= 3
+
+    assert ScreeningService._audit(record)["passed"] is True
+    record.decision_analysis.window_energy_avoided_mwh += 1
+    audit = ScreeningService._audit(record)
+    assert audit["passed"] is False
+    assert any("decision-impact" in warning for warning in audit["warnings"])
 
 
 def test_firestore_screening_envelope_round_trips_nested_geojson():

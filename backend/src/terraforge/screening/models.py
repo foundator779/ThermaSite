@@ -350,6 +350,33 @@ class SiteRecommendation(BaseModel):
     illustrative_annual_cooling_cost_usd: float | None = Field(default=None, ge=0)
 
 
+class StrategyResult(BaseModel):
+    name: str
+    emphasis: str
+    weights: FactorWeights
+    winner_site_id: str | None = None
+    winner_score: float | None = Field(default=None, ge=0, le=100)
+    margin_to_second: float | None = Field(default=None, ge=0)
+
+
+class DecisionAnalysis(BaseModel):
+    leader_site_id: str
+    hottest_site_id: str
+    costliest_site_id: str | None = None
+    window_days: int = Field(gt=0, le=31)
+    leader_window_energy_cost_usd: float | None = Field(default=None, ge=0)
+    costliest_window_energy_cost_usd: float | None = Field(default=None, ge=0)
+    window_cost_advantage_usd: float | None = Field(default=None, ge=0)
+    window_energy_avoided_mwh: float = Field(ge=0)
+    window_water_avoided_gallons_low: float = Field(ge=0)
+    window_water_avoided_gallons_high: float = Field(ge=0)
+    robustness_wins: int = Field(ge=0)
+    robustness_total: int = Field(gt=0)
+    robustness_label: Literal["resilient", "competitive", "sensitive"]
+    strategies: list[StrategyResult] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+
+
 class ScreeningRecord(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     owner_id: UUID | None = None
@@ -360,6 +387,7 @@ class ScreeningRecord(BaseModel):
     candidates: list[CandidateSite] = Field(default_factory=list)
     recommendations: list[SiteRecommendation] = Field(default_factory=list)
     resource_estimates: list[ResourceEstimate] = Field(default_factory=list)
+    decision_analysis: DecisionAnalysis | None = None
     events: list[RunEvent] = Field(default_factory=list)
     progress: int = 0
     current_step: str = "created"
