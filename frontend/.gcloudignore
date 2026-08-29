@@ -1,0 +1,10 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+demo-assets/
+coverage/
+*.log
+*.tsbuildinfo
+.vite/
+.eslintcache

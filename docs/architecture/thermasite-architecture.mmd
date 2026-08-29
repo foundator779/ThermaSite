@@ -1,0 +1,62 @@
+flowchart LR
+  USER([Data-center developer<br/>or hackathon judge])
+
+  subgraph GCP[Google Cloud · traceos-506713 · us-central1]
+    WEB[React + Vite workspace<br/>Cloud Run web]
+    API[FastAPI screening API<br/>Cloud Run API]
+
+    subgraph WORKFLOW[Typed agent workflow]
+      INTAKE[Intake Agent<br/>facility requirements]
+      SHORTLIST[Shortlist Agent<br/>industrial-edge catalog]
+      HEAT[Heat Agent<br/>GeoJSON submission + polling]
+      INTEL[Site Intelligence Agent<br/>cited research + extraction]
+      SCORE[Deterministic Scoring Engine<br/>weights + constraints]
+      EST[Resource Estimator<br/>PUE/WUE scenarios]
+      AUDIT[Evidence Audit Gate<br/>math + provenance]
+      REC[Recommendation Agent<br/>memo + diligence queue]
+
+      INTAKE --> SHORTLIST
+      SHORTLIST --> HEAT
+      SHORTLIST --> INTEL
+      HEAT --> SCORE
+      INTEL --> SCORE
+      SCORE --> EST --> AUDIT --> REC
+    end
+
+    FIRESTORE[(Firestore<br/>accounts · screenings · events)]
+    STORAGE[(Cloud Storage<br/>memos · evidence bundles)]
+    SECRETS[Secret Manager<br/>backend-only provider keys]
+    OBS[Cloud Logging + Trace<br/>operational telemetry]
+
+    WEB -->|HTTPS + session| API
+    API --> INTAKE
+    REC --> API
+    API -->|SSE activity + results| WEB
+    API <--> FIRESTORE
+    API --> STORAGE
+    SECRETS --> API
+    API --> OBS
+  end
+
+  FG[FortyGuard Temperature API<br/>same-area heat analyses]
+  GEMINI[Gemini + Google Search<br/>grounded site research]
+  SOURCES[Official evidence<br/>EIA · WRI · utilities · permits]
+  MAPS[Google Maps<br/>satellite context]
+
+  USER --> WEB
+  WEB --> MAPS
+  HEAT -->|api-key header| FG
+  INTEL --> GEMINI
+  INTEL --> SOURCES
+
+  classDef actor fill:#ff6b2c,stroke:#ffb08a,color:#111,stroke-width:2px;
+  classDef service fill:#181818,stroke:#777,color:#f5f2ec,stroke-width:1.5px;
+  classDef agent fill:#201a17,stroke:#ff6b2c,color:#f5f2ec,stroke-width:1.5px;
+  classDef data fill:#121b20,stroke:#6696aa,color:#f5f2ec,stroke-width:1.5px;
+  classDef external fill:#171717,stroke:#aaa,color:#f5f2ec,stroke-dasharray:5 4;
+
+  class USER actor;
+  class WEB,API service;
+  class INTAKE,SHORTLIST,HEAT,INTEL,SCORE,EST,AUDIT,REC agent;
+  class FIRESTORE,STORAGE,SECRETS,OBS data;
+  class FG,GEMINI,SOURCES,MAPS external;

@@ -1,0 +1,18 @@
+project_id  = "your-gcp-project"
+region      = "us-central1"
+
+api_image      = "us-central1-docker.pkg.dev/your-gcp-project/thermasite/api:COMMIT_SHA"
+web_image      = "us-central1-docker.pkg.dev/your-gcp-project/thermasite/web:COMMIT_SHA"
+analysis_image = "us-central1-docker.pkg.dev/your-gcp-project/thermasite/analysis:COMMIT_SHA"
+
+google_api_key_secret         = "terraforge-google-api-key"
+google_api_key_secret_version = "1"
+
+fortyguard_api_key_secret         = "thermasite-fortyguard-api-key"
+fortyguard_api_key_secret_version = "1"
+
+# Leave these blank to disable the optional integrations.
+monitoring_webhook_secret = ""
+firms_map_key_secret       = ""
+
+artifact_retention_days = 7

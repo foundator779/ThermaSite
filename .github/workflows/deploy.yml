@@ -1,0 +1,142 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: thermasite-production
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - name: Verify backend and analysis runtime
+        run: |
+          python -m pip install -e "backend[dev]"
+          python -m ruff check backend analysis_runtime
+          python -m pytest backend/tests analysis_runtime/tests -q
+      - name: Verify frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run lint
+          npm test -- --run
+          npm run build
+      - name: Verify Terraform
+        working-directory: infra/terraform
+        run: |
+          terraform fmt -check -recursive
+          terraform init -backend=false
+          terraform validate
+      - name: Verify production containers
+        run: |
+          docker build -t thermasite-api:verify backend
+          docker build -t thermasite-analysis:verify analysis_runtime
+          docker build --build-arg VITE_GOOGLE_MAPS_API_KEY=test-build-key -t thermasite-web:verify frontend
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    env:
+      REGION: us-central1
+      REPOSITORY: terraforge
+      TF_IN_AUTOMATION: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Configure Artifact Registry
+        run: |
+          gcloud services enable artifactregistry.googleapis.com \
+            --project "${{ secrets.GCP_PROJECT_ID }}"
+          gcloud artifacts repositories describe "$REPOSITORY" \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --location "$REGION" >/dev/null 2>&1 || \
+          gcloud artifacts repositories create "$REPOSITORY" \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --location "$REGION" \
+            --repository-format docker \
+            --description "ThermaSite deployment images"
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+
+      - name: Set immutable image names
+        run: |
+          REGISTRY="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPOSITORY"
+          echo "API_IMAGE=$REGISTRY/api:$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo "ANALYSIS_IMAGE=$REGISTRY/analysis:$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo "WEB_IMAGE=$REGISTRY/web:$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Build and push backend images
+        run: |
+          docker build --pull -t "$API_IMAGE" backend
+          docker build --pull -t "$ANALYSIS_IMAGE" analysis_runtime
+          docker push "$API_IMAGE"
+          docker push "$ANALYSIS_IMAGE"
+
+      - name: Build and push web image
+        run: |
+          docker build --pull \
+            --build-arg VITE_GOOGLE_MAPS_API_KEY="${{ secrets.GOOGLE_MAPS_API_KEY }}" \
+            -t "$WEB_IMAGE" frontend
+          docker push "$WEB_IMAGE"
+
+      - name: Initialize Terraform
+        working-directory: infra/terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.GCP_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="prefix=thermasite/production"
+          terraform validate
+
+      - name: Provision production
+        working-directory: infra/terraform
+        run: |
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=$REGION" \
+            -var="monitoring_webhook_secret=${{ vars.MONITORING_WEBHOOK_SECRET }}" \
+            -var="firms_map_key_secret=${{ vars.FIRMS_MAP_KEY_SECRET }}" \
+            -var="api_image=$API_IMAGE" \
+            -var="analysis_image=$ANALYSIS_IMAGE" \
+            -var="web_image=$WEB_IMAGE"
+
+      - name: Verify Cloud Run revisions are ready
+        run: |
+          for service in terraforge-api terraforge-worker terraforge-media-worker terraforge-web; do
+            gcloud run services describe "$service" \
+              --project "${{ secrets.GCP_PROJECT_ID }}" \
+              --region "$REGION" \
+              --format="value(status.conditions[0].status)" | grep -q True
+          done
+
+      - name: Deployment URLs
+        working-directory: infra/terraform
+        run: terraform output

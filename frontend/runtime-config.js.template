@@ -1,0 +1,4 @@
+window.__THERMASITE_CONFIG__ = {
+  apiBaseUrl: "${API_BASE_URL}",
+  googleMapsApiKey: "${GOOGLE_MAPS_API_KEY}"
+};

@@ -1,0 +1,18 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    secretEnv:
+      - GOOGLE_MAPS_API_KEY
+    args:
+      - -c
+      - >-
+        docker build
+        --build-arg VITE_GOOGLE_MAPS_API_KEY="$${GOOGLE_MAPS_API_KEY}"
+        --tag "${_IMAGE}"
+        .
+images:
+  - "${_IMAGE}"
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/thermaguard-google-maps-api-key/versions/latest
+      env: GOOGLE_MAPS_API_KEY

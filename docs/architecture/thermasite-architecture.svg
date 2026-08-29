@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060" role="img" aria-labelledby="title description">
+  <title id="title">ThermaSite production architecture</title>
+  <desc id="description">A Google Cloud architecture diagram showing a React web application, FastAPI screening API, typed agent workflow, FortyGuard and research integrations, deterministic scoring, audit, and managed persistence.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0a0a"/>
+      <stop offset="1" stop-color="#11100f"/>
+    </linearGradient>
+    <linearGradient id="orangePanel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b1a12"/>
+      <stop offset="1" stop-color="#181311"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity=".3"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff6b2c"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#77736e"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .eyebrow { fill:#ff8a54; font-size:15px; font-weight:700; letter-spacing:2.4px; }
+      .title { fill:#f7f3ed; font-size:40px; font-weight:720; letter-spacing:-1.1px; }
+      .subtitle { fill:#9c9892; font-size:17px; }
+      .boundary { fill:none; stroke:#343230; stroke-width:1.5; stroke-dasharray:7 7; }
+      .boundaryLabel { fill:#c5c0b8; font-size:16px; font-weight:650; }
+      .sectionLabel { fill:#8e8982; font-size:13px; font-weight:700; letter-spacing:1.7px; }
+      .box { fill:#171717; stroke:#3d3a37; stroke-width:1.4; }
+      .agent { fill:url(#orangePanel); stroke:#7d3b20; stroke-width:1.4; }
+      .data { fill:#121b20; stroke:#34596a; stroke-width:1.4; }
+      .external { fill:#151515; stroke:#66625d; stroke-width:1.4; stroke-dasharray:6 5; }
+      .boxTitle { fill:#f5f1eb; font-size:17px; font-weight:680; }
+      .boxText { fill:#a7a29b; font-size:13px; }
+      .pill { fill:#2c211b; stroke:#6d3c26; }
+      .pillText { fill:#ff9a69; font-size:11px; font-weight:700; letter-spacing:.8px; }
+      .line { fill:none; stroke:#ff6b2c; stroke-width:2; marker-end:url(#arrow); }
+      .mutedLine { fill:none; stroke:#77736e; stroke-width:1.6; marker-end:url(#arrowMuted); }
+      .dashLine { fill:none; stroke:#77736e; stroke-width:1.5; stroke-dasharray:5 5; marker-end:url(#arrowMuted); }
+      .lineLabel { fill:#a7a29b; font-size:11px; font-weight:600; }
+      .number { fill:#ff7b40; font-size:13px; font-weight:760; }
+      .footerTitle { fill:#e9e5de; font-size:14px; font-weight:680; }
+      .footerText { fill:#928d86; font-size:12px; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1060" fill="url(#background)"/>
+  <circle cx="1460" cy="-80" r="330" fill="#ff6b2c" opacity=".045"/>
+  <circle cx="80" cy="1020" r="260" fill="#ff6b2c" opacity=".035"/>
+
+  <text x="70" y="63" class="eyebrow">THERMASITE · TRACK 3</text>
+  <text x="70" y="111" class="title">Agentic infrastructure screening, with deterministic decisions.</text>
+  <text x="70" y="143" class="subtitle">Production architecture · Google Cloud Run · backend-only provider access · auditable evidence path</text>
+
+  <rect x="220" y="178" width="1115" height="715" rx="22" class="boundary"/>
+  <rect x="248" y="163" width="338" height="30" rx="15" fill="#171717" stroke="#343230"/>
+  <text x="267" y="184" class="boundaryLabel">Google Cloud · traceos-506713 · us-central1</text>
+
+  <text x="68" y="264" class="sectionLabel">USER</text>
+  <rect x="54" y="282" width="135" height="116" rx="18" fill="#ff6b2c" filter="url(#shadow)"/>
+  <circle cx="121" cy="319" r="16" fill="none" stroke="#19120f" stroke-width="3"/>
+  <path d="M91 366c4-22 17-33 30-33s26 11 30 33" fill="none" stroke="#19120f" stroke-width="3" stroke-linecap="round"/>
+  <text x="121" y="385" text-anchor="middle" fill="#18110e" font-size="12" font-weight="750">DEVELOPER / JUDGE</text>
+
+  <text x="267" y="229" class="sectionLabel">EXPERIENCE &amp; API</text>
+  <rect x="255" y="247" width="292" height="112" rx="15" class="box" filter="url(#shadow)"/>
+  <rect x="275" y="267" width="78" height="22" rx="11" class="pill"/>
+  <text x="314" y="282" text-anchor="middle" class="pillText">CLOUD RUN</text>
+  <text x="275" y="317" class="boxTitle">React decision workspace</text>
+  <text x="275" y="340" class="boxText">Facility input · satellite map · evidence</text>
+
+  <rect x="586" y="247" width="305" height="112" rx="15" class="box" filter="url(#shadow)"/>
+  <rect x="606" y="267" width="78" height="22" rx="11" class="pill"/>
+  <text x="645" y="282" text-anchor="middle" class="pillText">CLOUD RUN</text>
+  <text x="606" y="317" class="boxTitle">FastAPI screening API</text>
+  <text x="606" y="340" class="boxText">Auth · REST contracts · SSE activity stream</text>
+
+  <path d="M189 340 H245" class="line"/>
+  <path d="M547 303 H576" class="line"/>
+  <text x="551" y="291" class="lineLabel">HTTPS</text>
+  <path d="M586 335 H547" class="mutedLine"/>
+  <text x="548" y="352" class="lineLabel">SSE</text>
+
+  <text x="267" y="405" class="sectionLabel">TYPED AGENT WORKFLOW</text>
+  <rect x="255" y="423" width="1038" height="271" rx="18" fill="#121110" stroke="#302d2a"/>
+
+  <rect x="279" y="452" width="190" height="88" rx="13" class="agent"/>
+  <text x="298" y="476" class="number">01</text>
+  <text x="298" y="502" class="boxTitle">Intake Agent</text>
+  <text x="298" y="523" class="boxText">Typed facility constraints</text>
+
+  <rect x="279" y="570" width="190" height="88" rx="13" class="agent"/>
+  <text x="298" y="594" class="number">02</text>
+  <text x="298" y="620" class="boxTitle">Shortlist Agent</text>
+  <text x="298" y="641" class="boxText">8 markets → 5 finalists</text>
+
+  <rect x="514" y="452" width="210" height="88" rx="13" class="agent"/>
+  <text x="533" y="476" class="number">03A</text>
+  <text x="533" y="502" class="boxTitle">Heat Agent</text>
+  <text x="533" y="523" class="boxText">GeoJSON · submit · poll</text>
+
+  <rect x="514" y="570" width="210" height="88" rx="13" class="agent"/>
+  <text x="533" y="594" class="number">03B</text>
+  <text x="533" y="620" class="boxTitle">Site Intelligence</text>
+  <text x="533" y="641" class="boxText">Grounding · typed facts</text>
+
+  <rect x="769" y="452" width="213" height="88" rx="13" class="agent"/>
+  <text x="788" y="476" class="number">04</text>
+  <text x="788" y="502" class="boxTitle">Scoring Engine</text>
+  <text x="788" y="523" class="boxText">Deterministic weights</text>
+
+  <rect x="769" y="570" width="213" height="88" rx="13" class="agent"/>
+  <text x="788" y="594" class="number">05</text>
+  <text x="788" y="620" class="boxTitle">Resource Estimator</text>
+  <text x="788" y="641" class="boxText">PUE · WUE scenarios</text>
+
+  <rect x="1027" y="452" width="235" height="88" rx="13" class="agent"/>
+  <text x="1046" y="476" class="number">06</text>
+  <text x="1046" y="502" class="boxTitle">Evidence Audit Gate</text>
+  <text x="1046" y="523" class="boxText">Math · sources · uncertainty</text>
+
+  <rect x="1027" y="570" width="235" height="88" rx="13" class="agent"/>
+  <text x="1046" y="594" class="number">07</text>
+  <text x="1046" y="620" class="boxTitle">Recommendation Agent</text>
+  <text x="1046" y="641" class="boxText">Memo · diligence queue</text>
+
+  <path d="M374 540 V560" class="line"/>
+  <path d="M469 614 H494 V496 H504" class="line"/>
+  <path d="M469 614 H504" class="line"/>
+  <path d="M724 496 H759" class="line"/>
+  <path d="M724 614 H744 V514 H759" class="line"/>
+  <path d="M876 540 V560" class="line"/>
+  <path d="M982 614 H1007 V496 H1017" class="line"/>
+  <path d="M1145 540 V560" class="line"/>
+  <path d="M738 359 V405 H374 V442" class="line"/>
+
+  <text x="267" y="741" class="sectionLabel">DURABLE STATE &amp; OPERATIONS</text>
+  <rect x="255" y="759" width="238" height="99" rx="14" class="data"/>
+  <text x="275" y="790" class="boxTitle">Firestore</text>
+  <text x="275" y="815" class="boxText">Accounts · sessions · screenings</text>
+  <text x="275" y="836" class="boxText">Events · sources · rescoring state</text>
+
+  <rect x="514" y="759" width="238" height="99" rx="14" class="data"/>
+  <text x="534" y="790" class="boxTitle">Cloud Storage</text>
+  <text x="534" y="815" class="boxText">Investment memos</text>
+  <text x="534" y="836" class="boxText">Evidence bundles</text>
+
+  <rect x="773" y="759" width="238" height="99" rx="14" class="data"/>
+  <text x="793" y="790" class="boxTitle">Secret Manager</text>
+  <text x="793" y="815" class="boxText">FortyGuard · Gemini</text>
+  <text x="793" y="836" class="boxText">No browser credential exposure</text>
+
+  <rect x="1032" y="759" width="230" height="99" rx="14" class="data"/>
+  <text x="1052" y="790" class="boxTitle">Logging &amp; Trace</text>
+  <text x="1052" y="815" class="boxText">Provider-safe events</text>
+  <text x="1052" y="836" class="boxText">Operational telemetry</text>
+
+  <path d="M690 359 V721 H374 V749" class="mutedLine"/>
+  <path d="M714 359 V707 H633 V749" class="mutedLine"/>
+  <path d="M820 749 V359" class="mutedLine"/>
+  <path d="M860 359 V716 H1147 V749" class="mutedLine"/>
+
+  <text x="1388" y="229" class="sectionLabel">EXTERNAL EVIDENCE</text>
+  <rect x="1368" y="247" width="190" height="104" rx="15" class="external"/>
+  <text x="1388" y="280" class="boxTitle">Google Maps</text>
+  <text x="1388" y="305" class="boxText">Satellite context</text>
+  <text x="1388" y="326" class="boxText">Illustrative AOIs</text>
+
+  <rect x="1368" y="423" width="190" height="104" rx="15" class="external"/>
+  <text x="1388" y="456" class="boxTitle">FortyGuard API</text>
+  <text x="1388" y="481" class="boxText">Ambient heat analyses</text>
+  <text x="1388" y="502" class="boxText">Async activity IDs</text>
+
+  <rect x="1368" y="552" width="190" height="104" rx="15" class="external"/>
+  <text x="1388" y="585" class="boxTitle">Gemini Search</text>
+  <text x="1388" y="610" class="boxText">Grounded retrieval</text>
+  <text x="1388" y="631" class="boxText">Structured extraction</text>
+
+  <rect x="1368" y="681" width="190" height="122" rx="15" class="external"/>
+  <text x="1388" y="714" class="boxTitle">Official sources</text>
+  <text x="1388" y="739" class="boxText">EIA · WRI Aqueduct</text>
+  <text x="1388" y="760" class="boxText">Utilities · planning</text>
+  <text x="1388" y="781" class="boxText">Permit authorities</text>
+
+  <path d="M547 274 H1325 V299 H1358" class="dashLine"/>
+  <path d="M724 480 H740 V412 H1328 V475 H1358" class="line"/>
+  <text x="1164" y="404" class="lineLabel">BACKEND-ONLY API KEY</text>
+  <path d="M724 630 H740 V707 H1328 V604 H1358" class="line"/>
+  <path d="M724 646 H754 V721 H1342 V742 H1358" class="dashLine"/>
+
+  <rect x="54" y="939" width="1504" height="76" rx="16" fill="#141312" stroke="#2f2c29"/>
+  <text x="78" y="969" class="footerTitle">Trust boundary</text>
+  <text x="78" y="993" class="footerText">Models retrieve and explain. Stored facts drive deterministic scoring. The audit reproduces numerical claims before recommendation artifacts are released.</text>
+  <line x1="947" y1="958" x2="947" y2="996" stroke="#34312e"/>
+  <circle cx="981" cy="968" r="5" fill="#ff6b2c"/><text x="997" y="972" class="footerText">Decision path</text>
+  <circle cx="1105" cy="968" r="5" fill="#5a8497"/><text x="1121" y="972" class="footerText">Managed state</text>
+  <circle cx="1246" cy="968" r="5" fill="#77736e"/><text x="1262" y="972" class="footerText">Provider boundary</text>
+  <text x="981" y="995" class="footerText">No private chain-of-thought · no secrets in the browser · uncertainty remains visible</text>
+</svg>

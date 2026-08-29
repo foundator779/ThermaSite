@@ -1,0 +1,27 @@
+services:
+  api:
+    build: ./backend
+    ports: ["8000:8080"]
+    environment:
+      TERRAFORGE_ENV: local
+      TERRAFORGE_API_ORIGINS: http://localhost:5173
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      FORTYGUARD_API_KEY: ${FORTYGUARD_API_KEY:-}
+      FORTYGUARD_BASE_URL: ${FORTYGUARD_BASE_URL:-https://api.fortyguard.com}
+      FORTYGUARD_POLL_INTERVAL_SECONDS: ${FORTYGUARD_POLL_INTERVAL_SECONDS:-5}
+      FORTYGUARD_POLL_TIMEOUT_SECONDS: ${FORTYGUARD_POLL_TIMEOUT_SECONDS:-600}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID:-}
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY:-}
+    volumes:
+      - terraforge-data:/app/.terraforge-data
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
+        VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+    ports: ["5173:8080"]
+    depends_on: [api]
+volumes:
+  terraforge-data:

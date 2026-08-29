@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "terraforge-api"
+version = "0.1.0"
+description = "Agentic, auditable data-center siting and resource-estimation API"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.5",
+  "httpx>=0.27",
+  "pandas>=2.2",
+  "numpy>=2.0",
+  "scipy>=1.14",
+  "matplotlib>=3.9",
+  "rasterio>=1.4",
+  "google-adk>=1.0",
+  "google-genai>=2.12,<3",
+  "google-cloud-firestore>=2.19",
+  "google-cloud-storage>=2.18",
+  "google-cloud-pubsub>=2.25",
+  "google-cloud-run>=0.10",
+  "google-auth>=2.38",
+  "opentelemetry-sdk>=1.30",
+  "opentelemetry-exporter-otlp-proto-http>=1.30",
+  "opentelemetry-instrumentation-fastapi>=0.51b0",
+  "opentelemetry-instrumentation-httpx>=0.51b0",
+  "opentelemetry-exporter-gcp-trace>=1.9.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "respx>=0.21", "ruff>=0.7"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/terraforge"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["src", ".."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

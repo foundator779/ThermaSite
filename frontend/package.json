@@ -1,0 +1,45 @@
+{
+  "name": "thermasite-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "dev:e2e:api": "cross-env TERRAFORGE_API_ORIGINS=http://127.0.0.1:15173 GOOGLE_API_KEY=e2e-smoke-key python -m uvicorn terraforge.main:app --app-dir ../backend/src --host 127.0.0.1 --port 18000",
+    "dev:e2e:api:live": "cross-env TERRAFORGE_API_ORIGINS=http://127.0.0.1:15173 python -m uvicorn terraforge.main:app --app-dir ../backend/src --host 127.0.0.1 --port 18000 --env-file ../.env",
+    "dev:e2e:web": "cross-env VITE_API_BASE_URL=http://127.0.0.1:18000 vite --host 127.0.0.1 --port 15173",
+    "build": "tsc -b && vite build",
+    "test": "vitest",
+    "test:e2e": "playwright test --grep-invert @live",
+    "test:e2e:live": "playwright test --grep @live",
+    "test:e2e:all": "playwright test",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@tanstack/react-query": "^5.66.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.62.1",
+    "@types/geojson": "^7946.0.16",
+    "@types/google.maps": "^3.65.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jsdom": "^30.0.1",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.46.0",
+    "vite": "^6.1.0",
+    "vitest": "^4.1.10"
+  }
+}

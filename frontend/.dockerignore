@@ -1,0 +1,16 @@
+.env
+.env.*
+node_modules
+dist
+playwright-report
+test-results
+.pytest_cache
+.ruff_cache
+.terraforge-data
+e2e
+*.log
+*.tsbuildinfo
+.vite
+.eslintcache
+coverage
+blob-report

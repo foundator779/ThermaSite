@@ -1,0 +1,15 @@
+.env
+.env.*
+.pytest_cache
+.ruff_cache
+.terraforge-data
+__pycache__
+*.pyc
+*.log
+tests
+*.egg-info
+build
+dist
+.mypy_cache
+.coverage*
+htmlcov
