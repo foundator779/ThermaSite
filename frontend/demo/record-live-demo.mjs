@@ -100,7 +100,9 @@ try {
   await completedRun.waitFor({ timeout: 30_000 })
   await polishedClick(completedRun)
   await page.getByRole('heading', { name: /fits best\./ }).waitFor({ timeout: 30_000 })
-  await page.locator('.screening-map img').first().waitFor({ timeout: 30_000 })
+  await page.locator('.leaflet-tile-loaded').first().waitFor({ timeout: 30_000 })
+  await page.getByText(/USGS The National Map/).waitFor({ timeout: 30_000 })
+  if (await page.locator('script[src*="maps.googleapis.com"]').count()) throw new Error('A browser-keyed Google Maps script was loaded during recording.')
   if (await page.locator('.map-fallback').count()) throw new Error('The live map fell back during recording.')
   await pause(5000)
 

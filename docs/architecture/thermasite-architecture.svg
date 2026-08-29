@@ -163,8 +163,8 @@
 
   <text x="1388" y="229" class="sectionLabel">EXTERNAL EVIDENCE</text>
   <rect x="1368" y="247" width="190" height="104" rx="15" class="external"/>
-  <text x="1388" y="280" class="boxTitle">Google Maps</text>
-  <text x="1388" y="305" class="boxText">Satellite context</text>
+  <text x="1388" y="280" class="boxTitle">USGS National Map</text>
+  <text x="1388" y="305" class="boxText">Keyless aerial context</text>
   <text x="1388" y="326" class="boxText">Illustrative AOIs</text>
 
   <rect x="1368" y="423" width="190" height="104" rx="15" class="external"/>

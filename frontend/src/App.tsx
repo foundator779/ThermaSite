@@ -181,7 +181,7 @@ export default function App() {
           <div className="map-panel">
             <ScreeningMap sites={orderedCandidates} selectedId={effectiveSelectedId} onSelect={setSelectedId} footprint={latestEstimate?.polygon} footprintLabel={`${record.request.facility.facility_size_acres.toFixed(0)}-acre concept · industrial edge`} />
             <div className="map-legend"><span>Ambient heat</span><i className="cool" /><i /><i /><i className="hot" /><small>Lower</small><small>Higher</small></div>
-            <div className="map-caption">Satellite context · industrial-edge search zone · FortyGuard · 100 m · July 2026 · illustrative footprint, not parcel availability</div>
+            <div className="map-caption">USGS aerial context · industrial-edge search zone · FortyGuard · 100 m · July 2026 · illustrative footprint, not parcel availability</div>
           </div>
           <div className="rank-panel">
             <div className="panel-heading"><span className="eyebrow">Agent shortlist</span><strong>Top {record.candidates.length || 5}</strong></div>

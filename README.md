@@ -10,6 +10,14 @@ ThermaSite is an agentic facility-siting estimator built for **FortyGuard Hackat
 
 Each finalist appears on the map with a generated footprint matching the requested acreage, its FortyGuard heat layer, and heat-adjusted power and direct-water estimates. Judges can enter a shared persistent demo workspace with one click.
 
+## Hackathon build provenance
+
+This repository was initialized on August 29, 2026, during the August 18–30 hackathon build window. ThermaSite's data-center product, FortyGuard integration, facility-first shortlist workflow, deterministic scoring and resource models, evidence audit, decision stress test, interface, documentation, and demo were built during the event.
+
+The project reused a pre-existing generic FastAPI/React application shell and internal `terraforge` package name for orchestration, persistence, artifacts, event streaming, and Google Cloud deployment. The earlier habitat-oriented product logic and media features are not part of the submitted ThermaSite experience.
+
+AI tooling is disclosed transparently: Google Gemini 2.5 Flash and Google ADK support the in-product research agents, OpenAI Codex assisted the solo entrant with implementation and testing, and ElevenLabs generated the demo narration. AI models do not set ThermaSite's numerical scores, resource projections, or investment-impact calculations.
+
 ## Why it matters
 
 Early data-center site selection is fragmented across temperature data, utility economics, water constraints, zoning, fiber, logistics, and local permitting. ThermaSite turns that research into one decision workflow:
@@ -63,7 +71,7 @@ Facility power uses a heat-adjusted PUE scenario. Direct water is shown as a coo
 
 The investment case compares the recommended site with the hottest and highest-cost finalists using the same facility profile. It reports selected-window energy and direct-water differences, plus an electricity-spend scenario based on attributed EIA state industrial averages. A five-strategy robustness test—current lens, thermal resilience, power economics, water constraint, and delivery speed—shows whether the recommendation survives a different investment mandate. These calculations use stored evidence only and are independently reproduced by the audit gate.
 
-Each generated footprint is centered on an edge-of-market industrial search zone rather than a municipal centroid and matches the requested acreage. The close view uses satellite context so reviewers can see the surrounding land pattern. Aerial appearance does not establish vacancy or availability: the AOI is still an illustrative comparison, not a selected parcel, entitlement finding, utility-service boundary, or engineering layout.
+Each generated footprint is centered on an edge-of-market industrial search zone rather than a municipal centroid and matches the requested acreage. The close view uses keyless USGS aerial context so reviewers can see the surrounding land pattern. Aerial appearance does not establish vacancy or availability: the AOI is still an illustrative comparison, not a selected parcel, entitlement finding, utility-service boundary, or engineering layout.
 
 ## Local setup
 
@@ -80,7 +88,6 @@ Set these values in the root `.env`:
 ```dotenv
 FORTYGUARD_API_KEY=your_backend_only_key
 GOOGLE_API_KEY=your_gemini_key
-GOOGLE_MAPS_API_KEY=your_optional_browser_maps_key
 ```
 
 Never prefix the FortyGuard key with `VITE_`; it is read only by the backend and sent through the `api-key` header.
@@ -150,13 +157,14 @@ npm run lint
 npm test -- --run
 npm run build
 npm run test:e2e
+npm run demo:verify
 ```
 
-Live smoke tests are opt-in because they consume provider calls.
+`demo:verify` checks the deployed judge login, persisted screening, keyless runtime configuration, USGS aerial tile load, and absence of a Google Maps browser script. Paid-provider smoke tests remain opt-in because they consume provider calls.
 
 ## Deployment
 
-The production web and API services run on Google Cloud Run in project `traceos-506713`. Firestore stores users and screenings, Cloud Storage stores artifacts, and Google Secret Manager injects FortyGuard, Gemini, and browser Maps credentials. Credentials are never returned in readiness output or activity logs.
+The production web and API services run on Google Cloud Run in project `traceos-506713`. Firestore stores users and screenings, Cloud Storage stores artifacts, and Google Secret Manager injects FortyGuard and Gemini credentials into backend services only. The browser receives no provider API keys; USGS aerial tiles require no credential. Credentials are never returned in readiness output or activity logs.
 
 ## Sources and attribution
 
@@ -164,6 +172,7 @@ The production web and API services run on Google Cloud Run in project `traceos-
 - Industrial electricity snapshots: [U.S. Energy Information Administration](https://www.eia.gov/electricity/annual/table.php?t=epa_02_10.html)
 - Water-risk framework: [WRI Aqueduct](https://www.wri.org/aqueduct), used under CC BY 4.0 with local verification required
 - Permit and development evidence: official municipal planning/development sources listed per candidate
+- Aerial basemap: [USGS The National Map](https://www.usgs.gov/programs/national-geospatial-program/national-map), USGS Imagery Topo service
 
 ## Scope boundary
 

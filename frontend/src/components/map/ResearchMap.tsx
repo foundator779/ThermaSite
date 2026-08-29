@@ -4,7 +4,6 @@ import { Circle, Database, Droplets, Flame, Hexagon, Layers3, Leaf, LocateFixed,
 import { artifactUrl } from '../../api/client'
 import { getVegetationSample } from '../../api/runs'
 import { loadGoogleMaps } from '../../api/googleMaps'
-import { runtimeGoogleMapsApiKey } from '../../api/runtimeConfig'
 import type { RunRecord, StudyArea, VegetationSample } from '../../types/run'
 import { parseMapCoordinates } from './coordinates'
 
@@ -81,7 +80,7 @@ export function ResearchMap({ run, studyArea, onStudyAreaChange, controlsHost }:
   const [vegetationOpacity, setVegetationOpacity] = useState(72)
   const [vegetationSample, setVegetationSample] = useState<VegetationSample>()
   const [sampleLoading, setSampleLoading] = useState(false)
-  const apiKey = runtimeGoogleMapsApiKey || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+  const apiKey = ''
 
   useEffect(() => {
     callbackRef.current = onStudyAreaChange
@@ -329,7 +328,7 @@ export function ResearchMap({ run, studyArea, onStudyAreaChange, controlsHost }:
 
   return <div className="map-wrap" aria-label="Google map for drawing a habitat study area">
     <div ref={container} className="google-map-canvas" />
-    {!apiKey && <div className="map-key-message"><strong>Google Maps key required</strong><span>Add a browser-restricted GOOGLE_MAPS_API_KEY to the root .env file.</span></div>}
+    {!apiKey && <div className="map-key-message"><strong>Legacy research map disabled</strong><span>The submitted ThermaSite workspace uses the keyless USGS aerial map.</span></div>}
     {controlsHost && createPortal(drawingControls, controlsHost)}
     <section className="map-mode-panel" aria-label="Ecological map modes">
       <div className="map-mode-buttons">{MAP_MODES.map((item) => <button key={item.id} className={mapMode === item.id ? 'active' : ''} onClick={() => { setMapMode(item.id); setLayerMessage(item.id === 'climate' ? '' : 'Loading mapped evidence…') }} disabled={item.id !== 'climate' && !run}>{item.icon}<span>{item.label}</span></button>)}</div>

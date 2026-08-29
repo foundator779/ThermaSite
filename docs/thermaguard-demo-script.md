@@ -1,6 +1,6 @@
 # ThermaSite judge demo — continuous take
 
-**Recorded length:** 2:22.84 (hard limit: 3:00)<br>
+**Recorded length:** 2:20.44 (hard limit: 3:00)<br>
 **Format:** One uninterrupted 1920×1080 MP4 with timed narration<br>
 **Final export:** `demo-assets/thermasite-final-demo-narrated.mp4`<br>
 **Narrator:** ElevenLabs Bella, Professional / Bright / Warm (`eleven_multilingual_v2`)<br>
@@ -22,7 +22,7 @@ The narration below matches the recorded production run. FortyGuard provides amb
 | 1:36–1:47 | Show factor scores, then increase the thermal weight in **Scenario lab** and apply it. | “Every factor stays visible. Change the investment weights, and ThermaSite rescores stored evidence without another paid provider call.” |
 | 1:48–2:01 | Show the refreshed impact panel and Hillsboro moving to first. | “The recommendation and operating advantage update together. Here, emphasizing thermal resilience moves Hillsboro to first and exposes a more sensitive decision.” |
 | 2:02–2:17 | Open **Evidence & memo** and show the audit, downloads, and cited sources. | “An independent audit reproduces the ranking, projections, and impact claims. Judges can inspect official sources, FortyGuard activity IDs, and download the memo and evidence bundle.” |
-| 2:17–2:22 | Close the drawer and return to the recommendation. | “ThermaSite finds the five places worth investigating next.” |
+| 2:16–2:20 | Close the drawer and return to the recommendation. | “ThermaSite finds the five places worth investigating next.” |
 
 ## Submission notes
 
@@ -30,7 +30,7 @@ The narration below matches the recorded production run. FortyGuard provides amb
 - Lead with the core interaction: facility size in, five defensible locations out.
 - Core judging story: live FortyGuard integration, same-scale thermal comparison, tangible building overlays, deterministic resource estimates, quantified impact, decision stress-testing, persistence, auditability, and evidence exports.
 - Say “AI factory” once for accessibility, then use “data-center campus” or “facility.”
-- The satellite view deliberately shows open industrial-edge land. Do not describe an orange footprint as an available or buildable parcel; zoning, ownership, environmental constraints, and utility capacity still require verification.
+- The keyless USGS aerial view deliberately shows open industrial-edge land. Do not describe an orange footprint as an available or buildable parcel; zoning, ownership, environmental constraints, and utility capacity still require verification.
 - Do not say FortyGuard directly predicts power or water. It provides the ambient heat evidence used by the estimator.
 - The narrated MP4 is one continuous take and below three minutes. If a platform transcode adds padding, trim only silent head or tail frames.
 - Recommended title: **ThermaSite — Size the facility. Find the five places built for it.**

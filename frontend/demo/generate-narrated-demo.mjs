@@ -33,7 +33,7 @@ const segments = [
   { start: 96.0, end: 107.0, text: 'Every factor stays visible. Change the investment weights, and ThermaSite rescores stored evidence without another paid provider call.' },
   { start: 108.0, end: 121.0, text: 'The recommendation and operating advantage update together. Here, emphasizing thermal resilience moves Hillsboro to first and exposes a more sensitive decision.' },
   { start: 122.0, end: 137.0, text: 'An independent audit reproduces the ranking, projections, and impact claims. Judges can inspect official sources, FortyGuard activity IDs, and download the memo and evidence bundle.' },
-  { start: 137.5, end: 142.3, text: 'ThermaSite finds the five places worth investigating next.' },
+  { start: 136.5, end: 140.3, text: 'ThermaSite finds the five places worth investigating next.' },
 ]
 
 const regenerateSegments = new Set(
