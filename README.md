@@ -4,7 +4,10 @@
 
 ### [Try ThermaSite live →](https://thermaguard-1060372410958.us-central1.run.app)
 
-Use **Enter judge demo** for immediate access to the persistent demonstration workspace.
+**Judge access:** choose **Enter judge demo** for immediate access to the persistent demonstration workspace. No password or provider key is exposed.
+
+- **Primary track:** Track 3 — Industrial & Enterprise
+- **Demo guide:** [2:20 continuous demo script](docs/thermaguard-demo-script.md) — the narrated video is submitted with the entry and intentionally excluded from Git because it is a generated media artifact.
 
 ThermaSite is an agentic facility-siting estimator built for **FortyGuard Hackathon '26, Track 3 — Industrial & Enterprise**. A developer enters the planned campus acreage, IT design density, utilization, and cooling architecture. ThermaSite turns that into a planning load, pre-screens a versioned catalog of eight U.S. data-center markets, sends the five strongest candidates to FortyGuard with identical dates and same-scale AOIs, and returns an auditable ranked shortlist.
 
@@ -42,6 +45,19 @@ ThermaSite separates probabilistic research from deterministic decisions. Cloud 
 
 The editable source for the diagram is available in [Mermaid format](docs/architecture/thermasite-architecture.mmd).
 
+## Tech stack
+
+| Layer | Technology |
+| --- | --- |
+| Web | React 19, TypeScript, Vite, TanStack Query, Leaflet, Recharts, Inter Variable |
+| API | Python 3.11+, FastAPI, Pydantic, HTTPX |
+| AI workflow | Google Gemini, Google Search grounding, Google ADK, typed two-stage fact extraction |
+| Heat intelligence | FortyGuard Temperature API: asynchronous heatmap submission and status polling |
+| Decision system | Deterministic Python scoring, resource estimation, robustness testing, and evidence audit |
+| Persistence | Local filesystem in development; Firestore and Cloud Storage in production |
+| Infrastructure | Docker Compose, Google Cloud Run, Secret Manager, Terraform |
+| Quality | Pytest, Ruff, Vitest, ESLint, Playwright |
+
 ## Facility-first input
 
 The launch screen asks only for the information a developer already has:
@@ -73,39 +89,106 @@ The investment case compares the recommended site with the hottest and highest-c
 
 Each generated footprint is centered on an edge-of-market industrial search zone rather than a municipal centroid and matches the requested acreage. The close view uses keyless USGS aerial context so reviewers can see the surrounding land pattern. Aerial appearance does not establish vacancy or availability: the AOI is still an illustrative comparison, not a selected parcel, entitlement finding, utility-service boundary, or engineering layout.
 
-## Local setup
+## Run from scratch
 
-Requirements: Python 3.11+, Node.js 22+, and Docker when using Compose.
+The shortest reproducible path is Docker Compose. A native Python/Node path is also provided below.
+
+### 1. Prerequisites
+
+- Git
+- Docker Desktop with Docker Compose, **or** Python 3.11+ and Node.js 22+
+- A FortyGuard API key for new heatmap runs
+- A Google Gemini API key only if you want live grounded research for custom, non-catalog sites
+
+### 2. Clone and configure
 
 ```bash
+git clone https://github.com/foundator779/ThermaSite.git
+cd ThermaSite
 cp .env.example .env
-python -m pip install -e "backend[dev]"
-cd frontend && npm install
 ```
 
-Set these values in the root `.env`:
+On Windows PowerShell, replace the last command with:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edit the root `.env`. These are the only provider variables needed for the submitted workflow:
 
 ```dotenv
-FORTYGUARD_API_KEY=your_backend_only_key
-GOOGLE_API_KEY=your_gemini_key
+# Required to launch a new temperature screening; backend only
+FORTYGUARD_API_KEY=replace_with_your_fortyguard_key
+FORTYGUARD_BASE_URL=https://api.fortyguard.com
+
+# Optional for live research on custom non-catalog candidates
+GOOGLE_API_KEY=replace_with_your_gemini_key
+
+# Local browser-to-API connection; this is not a secret
+VITE_API_BASE_URL=http://localhost:8000
+TERRAFORGE_API_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
-Never prefix the FortyGuard key with `VITE_`; it is read only by the backend and sent through the `api-key` header.
+Never prefix the FortyGuard key with `VITE_`. ThermaSite reads it only in FastAPI and sends it to FortyGuard through the backend-only `api-key` header. `.env` is git-ignored.
 
-Run locally:
+### 3A. Run with Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
-Or start each service:
+Wait until the API and web services are healthy, then open:
+
+- App: `http://localhost:5173`
+- API documentation: `http://localhost:8000/docs`
+- Readiness check: `http://localhost:8000/api/v1/readyz`
+
+Choose **Register** to create a persistent local account, or **Enter judge demo** for the shared demo workspace. Local users, sessions, and screenings are saved in the `terraforge-data` Docker volume.
+
+### 3B. Run natively instead
+
+From the repository root:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e "backend[dev]"
+cd frontend
+npm ci
+cd ..
+```
+
+Windows PowerShell activation is:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Start the API in terminal 1:
 
 ```bash
 python -m uvicorn terraforge.main:app --app-dir backend/src --reload --port 8000
-cd frontend && npm run dev
 ```
 
-Open `http://localhost:5173`. API documentation is at `http://localhost:8000/docs`.
+Start the web app in terminal 2:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Open `http://localhost:5173`. Native local state is saved under `.terraforge-data`, so refreshing the browser or restarting the API does not erase accounts or screenings.
+
+### 4. First-run check
+
+1. Open the app and register, sign in, or enter the judge demo.
+2. Keep the default 40-acre, 1.25 MW/acre hybrid-cooled facility.
+3. Select **Find my top five locations**.
+4. Watch the trace reach `COMPLETED`, then verify five ranked candidates, map footprints, thermal layers, resource estimates, citations, and two downloadable artifacts.
+5. Change a factor weight, apply the rescore, refresh the page, and confirm the saved result remains.
+
+FortyGuard analysis is asynchronous and can take several minutes. The UI keeps the activity trace visible and reports authentication, plan, rate-limit, validation, provider-failure, and bounded-timeout states.
 
 ## Accounts and persistence
 
@@ -147,6 +230,102 @@ Open `http://localhost:5173`. API documentation is at `http://localhost:8000/doc
 
 Legacy `/api/v1/runs` contracts remain as compatibility routes during the hackathon conversion, but the ThermaSite frontend does not call them.
 
+## Real FortyGuard API request and response
+
+This is production evidence, not a mock. On **August 29, 2026 at 11:24 UTC**, screening `3a4c5d16-3b80-40d0-98ab-17341c8225d8` sent the following 40-acre New Albany, Ohio AOI to `POST /v1/heatmap`. The key is represented by an environment variable; it was never present in browser code or Git.
+
+```bash
+curl --request POST 'https://api.fortyguard.com/v1/heatmap' \
+  --header "api-key: ${FORTYGUARD_API_KEY}" \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "polygon_aoi": {
+      "type": "FeatureCollection",
+      "features": [{
+        "type": "Feature",
+        "properties": {"site_id": "columbus-oh"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[
+            [-82.75136286809841, 40.1101884057971],
+            [-82.74663713190158, 40.1101884057971],
+            [-82.74663713190158, 40.1138115942029],
+            [-82.75136286809841, 40.1138115942029],
+            [-82.75136286809841, 40.1101884057971]
+          ]]
+        }
+      }]
+    },
+    "date_time": {
+      "start_date": "2026-07-01",
+      "end_date": "2026-07-31",
+      "filter_type": 4
+    },
+    "granularity": 100,
+    "analytic_type": "tcm"
+  }'
+```
+
+FortyGuard returned activity ID `51f1e68f-9636-4988-8447-58a96598a962`. ThermaSite persisted that ID and polled the documented unified status endpoint. The request below was re-run against that real completed activity on August 29 to verify the proof included here:
+
+```bash
+curl --request GET \
+  'https://api.fortyguard.com/v1/status/51f1e68f-9636-4988-8447-58a96598a962' \
+  --header "api-key: ${FORTYGUARD_API_KEY}" \
+  --header 'Content-Type: application/json'
+```
+
+Genuine response excerpt:
+
+```json
+{
+  "error": false,
+  "status_code": 200,
+  "message": "Completed",
+  "data": {
+    "activity_id": "51f1e68f-9636-4988-8447-58a96598a962",
+    "status": "Completed",
+    "result": {
+      "map_data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "id": "0",
+            "type": "Feature",
+            "properties": {
+              "tile_id": 0,
+              "average_temperature": 24.2367,
+              "min_temperature": 11.6767,
+              "max_temperature": 35.3024
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [[
+                [-82.7516372472826, 40.11022652293091],
+                [-82.75046653780272, 40.11024422741162],
+                [-82.75048885322963, 40.1111144434992],
+                [-82.75165957761544, 40.11109673847631],
+                [-82.7516372472826, 40.11022652293091]
+              ]]
+            }
+          }
+        ]
+      },
+      "stats_data": {
+        "temperature_stats": {
+          "minimum": 24.2046,
+          "maximum": 24.2372,
+          "mean": 24.22075,
+          "standard_deviation": 0.012369101287751838
+        }
+      }
+    }
+  }
+}
+```
+
+The excerpt preserves the provider's field names and values while omitting 15 additional GeoJSON features and the long distribution arrays for readability. The completed production record contains both the TCM activity above and exceedance activity `bd7e0d47-1d45-4813-b6b7-f3670bfc1c19`.
+
 ## Verification
 
 ```bash
@@ -168,12 +347,20 @@ The production web and API services run on Google Cloud Run in project `traceos-
 
 ## Sources and attribution
 
+- Event requirements and API workflow: [FortyGuard Hackathon '26 Participant Handbook](https://drive.google.com/file/d/1GPAke_0Nez8vaRFs_gqzUsZmQoptsjL3/view)
 - Temperature analytics: [FortyGuard Temperature API](https://docs-api.fortyguard.com/)
 - Industrial electricity snapshots: [U.S. Energy Information Administration](https://www.eia.gov/electricity/annual/table.php?t=epa_02_10.html)
 - Water-risk framework: [WRI Aqueduct](https://www.wri.org/aqueduct), used under CC BY 4.0 with local verification required
 - Permit and development evidence: official municipal planning/development sources listed per candidate
 - Aerial basemap: [USGS The National Map](https://www.usgs.gov/programs/national-geospatial-program/national-map), USGS Imagery Topo service
 
-## Scope boundary
+## Known limitations — what does not work yet
 
-ThermaSite is a screening and due-diligence prioritization product. It does not discover or purchase parcels, file permits, guarantee utility capacity, determine water rights, perform cooling-system engineering, or replace legal, environmental, technical, or financial underwriting.
+- **No parcel discovery or land-availability proof.** Footprints are facility-sized AOIs centered on industrial-edge search zones. USGS aerial imagery provides context but does not prove vacancy, ownership, zoning, environmental clearance, or suitability.
+- **No permit or utility transaction workflow.** ThermaSite does not file permits, reserve grid capacity, secure interconnection, obtain water rights, negotiate tariffs, or claim that a project is by-right.
+- **Catalog evidence is a screening snapshot.** Preset markets use versioned EIA, WRI Aqueduct, municipal, utility, and infrastructure sources. Facts can become stale and must be revalidated during diligence. Custom sites remain provisional if live grounded research fails.
+- **Resource estimates are scenarios, not designs.** PUE/WUE, power, water, cooling-cost, and investment-impact outputs depend on editable assumptions and cover the selected window. Annual extrapolation is off by default. No cooling-system engineering or full financial underwriting is performed.
+- **U.S.-only and bounded in scope.** New FortyGuard requests accept U.S. coordinates, dates from `2021-01-01`, windows of at most 31 days, and AOIs no larger than 10 square miles. The submitted UI demonstrates a July 2026 comparison rather than continuous portfolio monitoring.
+- **External providers can block a fresh run.** A missing/invalid key, exhausted plan, rate limit, provider outage, or polling timeout prevents new thermal analysis. Saved completed screenings remain viewable; the app does not fabricate substitute temperatures.
+- **Account recovery is not implemented.** Registration, scrypt password hashing, login, logout, revocable sessions, owner scoping, and persistent storage are real. Email verification, password reset, MFA, organization administration, and social login are outside this hackathon build.
+- **Not a professional opinion.** ThermaSite prioritizes due diligence; it does not replace legal, environmental, engineering, permitting, water-rights, utility-capacity, or investment review.
