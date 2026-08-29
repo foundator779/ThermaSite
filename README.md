@@ -2,6 +2,10 @@
 
 **Size the facility. Find the five places built for it.**
 
+### [Try ThermaSite live →](https://thermaguard-1060372410958.us-central1.run.app)
+
+Use **Enter judge demo** for immediate access to the persistent demonstration workspace.
+
 ThermaSite is an agentic facility-siting estimator built for **FortyGuard Hackathon '26, Track 3 — Industrial & Enterprise**. A developer enters the planned campus acreage, IT design density, utilization, and cooling architecture. ThermaSite turns that into a planning load, pre-screens a versioned catalog of eight U.S. data-center markets, sends the five strongest candidates to FortyGuard with identical dates and same-scale AOIs, and returns an auditable ranked shortlist.
 
 Each finalist appears on the map with a generated footprint matching the requested acreage, its FortyGuard heat layer, and heat-adjusted power and direct-water estimates. Judges can enter a shared persistent demo workspace with one click.
